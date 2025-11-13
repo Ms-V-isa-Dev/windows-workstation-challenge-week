@@ -1,0 +1,1469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windows 11 Challenge Week</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .player-section {
+            background: white;
+            padding: 30px 40px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .player-input-group {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .player-input-group h3 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .player-input-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .player-input-item label {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9em;
+        }
+
+        .player-input-item input {
+            padding: 10px 15px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+        }
+
+        .start-btn-container {
+            text-align: center;
+        }
+
+        .player-input-group button {
+            padding: 12px 40px;
+            font-size: 1.1em;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .player-input-group button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .player-display {
+            display: none;
+            text-align: center;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .player-display .players-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .player-display .player-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        /* Turn Indicator */
+        .turn-indicator {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .turn-indicator h2 {
+            color: white;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .turn-indicator .current-player {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin: 10px 0;
+        }
+
+        /* Scoreboard */
+        .scoreboard {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .scoreboard h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .score-table th,
+        .score-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .score-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+
+        .score-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '📝';
+            font-size: 1.2em;
+        }
+
+        /* Drag and Drop Styles */
+        .drag-drop-container {
+            display: grid;
+            gap: 20px;
+        }
+
+        .draggables {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            min-height: 100px;
+        }
+
+        .drag-item {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: move;
+            user-select: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .drag-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .drop-zone {
+            padding: 20px;
+            background: white;
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            min-height: 100px;
+            transition: all 0.3s;
+        }
+
+        .drop-zone.drag-over {
+            background: #e6e9f7;
+            border-color: #764ba2;
+        }
+
+        .drop-zone h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .drop-zone .items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Fill in the Blanks Styles */
+        .fill-blank-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .fill-blank-item p {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .fill-blank-item input {
+            padding: 8px 12px;
+            border: 2px solid #667eea;
+            border-radius: 5px;
+            font-size: 1em;
+            min-width: 200px;
+        }
+
+        .fill-blank-item input.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .fill-blank-item input.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        /* Multiple Choice Styles */
+        .mcq-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .mcq-question {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .mcq-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mcq-option {
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mcq-option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .mcq-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .mcq-option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .mcq-option.incorrect {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        /* Matching Styles */
+        .matching-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .matching-column {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .matching-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .matching-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .matching-item.selected {
+            background: #ffc107;
+            color: #333;
+            transform: scale(1.05);
+        }
+
+        .matching-item.matched {
+            background: #28a745;
+            cursor: default;
+        }
+
+        /* Memory Match Styles */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 120px;
+        }
+
+        .memory-card[data-card-type="question"] {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .memory-card[data-card-type="answer"] {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-card .card-front {
+            display: block;
+            font-size: 3em;
+        }
+
+        .memory-card .card-back {
+            display: none;
+            font-size: 0.8em;
+            line-height: 1.3;
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: #333;
+            border: 3px solid #667eea;
+        }
+
+        .memory-card.flipped .card-back {
+            display: block;
+        }
+
+        .memory-card.flipped .card-front {
+            display: none;
+        }
+
+        .memory-card.flipped[data-card-type="question"] {
+            border-color: #f5576c;
+            box-shadow: 0 0 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .memory-card.flipped[data-card-type="answer"] {
+            border-color: #00f2fe;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .memory-card.matched {
+            background: #28a745 !important;
+            color: white;
+            cursor: default;
+        }
+
+        .memory-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Submit and Score Buttons */
+        .submit-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .end-turn-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            margin-left: 10px;
+            display: none;
+        }
+
+        .end-turn-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .score-display {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #667eea;
+            display: none;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .reset-btn {
+            padding: 10px 25px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        /* Final Leaderboard */
+        .leaderboard {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 15px;
+            margin-top: 30px;
+            color: white;
+        }
+
+        .leaderboard h2 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .podium-place {
+            background: white;
+            color: #333;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .podium-place.first {
+            order: 2;
+            transform: translateY(-20px);
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+        }
+
+        .podium-place.second {
+            order: 1;
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        }
+
+        .podium-place.third {
+            order: 3;
+            background: linear-gradient(135deg, #cd7f32 0%, #e5a672 100%);
+        }
+
+        .podium-place .medal {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .podium-place .player-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .podium-place .total-score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .matching-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .memory-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .podium-place {
+                transform: none !important;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .podium-place.first {
+                order: 1;
+            }
+
+            .podium-place.second {
+                order: 2;
+            }
+
+            .podium-place.third {
+                order: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🪟 Windows 11 Challenge Week</h1>
+            <p>Complete all sections to test your knowledge!</p>
+        </div>
+
+        <div class="player-section">
+            <div class="player-input-group" id="playerInputGroup">
+                <h3>Enter Player Names (optional - default names will be used if left blank)</h3>
+                <div class="players-grid">
+                    <div class="player-input-item">
+                        <label for="player1">Player 1:</label>
+                        <input type="text" id="player1" placeholder="Enter name">
+                    </div>
+                    <div class="player-input-item">
+                        <label for="player2">Player 2:</label>
+                        <input type="text" id="player2" placeholder="Enter name">
+                    </div>
+                    <div class="player-input-item">
+                        <label for="player3">Player 3:</label>
+                        <input type="text" id="player3" placeholder="Enter name">
+                    </div>
+                    <div class="player-input-item">
+                        <label for="player4">Player 4:</label>
+                        <input type="text" id="player4" placeholder="Enter name">
+                    </div>
+                    <div class="player-input-item">
+                        <label for="player5">Player 5:</label>
+                        <input type="text" id="player5" placeholder="Enter name">
+                    </div>
+                </div>
+                <div class="start-btn-container">
+                    <button onclick="setPlayerNames()">Start Worksheet</button>
+                </div>
+            </div>
+            <div class="player-display" id="playerDisplay">
+                <div>Welcome to the Challenge Week! 🎉</div>
+                <div class="players-list" id="playersList"></div>
+            </div>
+        </div>
+
+        <div class="content" id="mainContent" style="display: none;">
+            <!-- Turn Indicator -->
+            <div class="turn-indicator" id="turnIndicator">
+                <h2>Current Turn:</h2>
+                <div class="current-player" id="currentPlayerDisplay">Player 1</div>
+            </div>
+
+            <!-- Current Scoreboard -->
+            <div class="scoreboard">
+                <h3>📊 Current Scores</h3>
+                <table class="score-table" id="scoreTable">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Section 1</th>
+                            <th>Section 2</th>
+                            <th>Section 3</th>
+                            <th>Section 4</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scoreTableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section 1: Drag and Drop -->
+            <div class="section">
+                <h2 class="section-title">Section 1: Drag and Drop - Windows 11 Tools</h2>
+                <div class="instructions">
+                    <strong>Instructions:</strong> Drag each tool to its appropriate category. Tools can be categorized by their primary function. Click "Check Answers" when done, then click "End Turn" to pass to the next player.
+                </div>
+                <div class="drag-drop-container">
+                    <div class="draggables" id="draggables">
+                        <div class="drag-item" draggable="true" data-category="disk">Disk Management<br><small>Graphical tool for partitioning and formatting disks</small></div>
+                        <div class="drag-item" draggable="true" data-category="productivity">Power Automate<br><small>Automates repetitive tasks with prebuilt actions</small></div>
+                        <div class="drag-item" draggable="true" data-category="productivity">Notepad<br><small>Updated lightweight text editor with dark mode</small></div>
+                        <div class="drag-item" draggable="true" data-category="disk">DiskPart<br><small>Command-line tool for managing disk partitions</small></div>
+                        <div class="drag-item" draggable="true" data-category="utility">Quick Assist<br><small>Allows live assistance using screen-sharing</small></div>
+                        <div class="drag-item" draggable="true" data-category="utility">Snipping Tool<br><small>A utility for capturing and editing screenshots</small></div>
+                        <div class="drag-item" draggable="true" data-category="productivity">Calculator<br><small>Includes programmer, scientific, and conversion modes</small></div>
+                        <div class="drag-item" draggable="true" data-category="terminal">Windows Terminal<br><small>Multi-tab interface for PowerShell and command shells</small></div>
+                        <div class="drag-item" draggable="true" data-category="productivity">Alarms & Clock<br><small>Tracks world time and offers focus sessions</small></div>
+                        <div class="drag-item" draggable="true" data-category="disk">Disk2Vhd<br><small>Converts physical disks into virtual VHD files</small></div>
+                    </div>
+                    <div class="categories-grid">
+                        <div class="drop-zone" data-category="disk">
+                            <h3>💾 Disk & Storage Tools</h3>
+                            <div class="items"></div>
+                        </div>
+                        <div class="drop-zone" data-category="productivity">
+                            <h3>⚡ Productivity Apps</h3>
+                            <div class="items"></div>
+                        </div>
+                        <div class="drop-zone" data-category="utility">
+                            <h3>🛠️ Utility & Assistance</h3>
+                            <div class="items"></div>
+                        </div>
+                        <div class="drop-zone" data-category="terminal">
+                            <h3>⌨️ Terminal & Command</h3>
+                            <div class="items"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="submit-btn" onclick="checkDragDrop()">Check Answers</button>
+                <button class="reset-btn" onclick="resetDragDrop()">Reset</button>
+                <button class="end-turn-btn" id="endTurnBtn1" onclick="endTurn(1)">End Turn</button>
+                <div class="score-display" id="dragDropScore"></div>
+            </div>
+
+            <!-- Section 2: Fill in the Blanks -->
+            <div class="section">
+                <h2 class="section-title">Section 2: Fill in the Blanks</h2>
+                <div class="instructions">
+                    <strong>Instructions:</strong> Fill in the blanks with the correct words or phrases. Click "Check Answers" when done, then click "End Turn".
+                </div>
+                <div id="fillBlanksContainer"></div>
+                <button class="submit-btn" onclick="checkFillBlanks()">Check Answers</button>
+                <button class="reset-btn" onclick="resetFillBlanks()">Reset</button>
+                <button class="end-turn-btn" id="endTurnBtn2" onclick="endTurn(2)">End Turn</button>
+                <div class="score-display" id="fillBlanksScore"></div>
+            </div>
+
+            <!-- Section 3: Multiple Choice -->
+            <div class="section">
+                <h2 class="section-title">Section 3: Multiple Choice Questions</h2>
+                <div class="instructions">
+                    <strong>Instructions:</strong> Click on the correct answer for each question. Click "Check Answers" when done, then click "End Turn".
+                </div>
+                <div id="mcqContainer"></div>
+                <button class="submit-btn" onclick="checkMCQ()">Check Answers</button>
+                <button class="reset-btn" onclick="resetMCQ()">Reset</button>
+                <button class="end-turn-btn" id="endTurnBtn3" onclick="endTurn(3)">End Turn</button>
+                <div class="score-display" id="mcqScore"></div>
+            </div>
+
+            <!-- Section 4: Matching -->
+            <div class="section">
+                <h2 class="section-title">Section 4: Matching - Windows Security</h2>
+                <div class="instructions">
+                    <strong>Instructions:</strong> Click on items from both columns to match them. Click on a left item, then click on its matching right item. Click "Check Matches" when done, then click "End Turn".
+                </div>
+                <div class="matching-container">
+                    <div class="matching-column">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #667eea;">Category</h3>
+                        <div class="matching-item" data-id="1">Virus</div>
+                        <div class="matching-item" data-id="2">Firewall</div>
+                        <div class="matching-item" data-id="3">Application</div>
+                        <div class="matching-item" data-id="4">Account Protection</div>
+                    </div>
+                    <div class="matching-column">
+                        <h3 style="text-align: center; margin-bottom: 15px; color: #667eea;">Protection Type</h3>
+                        <div class="matching-item" data-id="1">& Threat Protection</div>
+                        <div class="matching-item" data-id="2">& Network Protection</div>
+                        <div class="matching-item" data-id="3">& Browser Control</div>
+                        <div class="matching-item" data-id="4">& Security</div>
+                    </div>
+                </div>
+                <button class="submit-btn" onclick="checkMatching()">Check Matches</button>
+                <button class="reset-btn" onclick="resetMatching()">Reset</button>
+                <button class="end-turn-btn" id="endTurnBtn4" onclick="endTurn(4)">End Turn</button>
+                <div class="score-display" id="matchingScore"></div>
+            </div>
+
+            <!-- Final Leaderboard -->
+            <div class="leaderboard" id="leaderboard" style="display: none;">
+                <h2>🏆 Final Leaderboard 🏆</h2>
+                <div class="podium" id="podium"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State Variables
+        let players = [];
+        let currentPlayerIndex = 0;
+        let playerScores = {};
+        let sectionScores = {
+            1: {},
+            2: {},
+            3: {},
+            4: {}
+        };
+        let completedPlayers = {
+            1: new Set(),
+            2: new Set(),
+            3: new Set(),
+            4: new Set()
+        };
+
+        // Player Name Management
+        function setPlayerNames() {
+            players = [];
+            
+            for (let i = 1; i <= 5; i++) {
+                const input = document.getElementById(`player${i}`);
+                const name = input.value.trim();
+                if (name !== '') {
+                    players.push(name);
+                } else {
+                    players.push(`Player ${i}`);
+                }
+            }
+            
+            // Initialize scores
+            players.forEach(player => {
+                playerScores[player] = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            });
+
+            document.getElementById('playerInputGroup').style.display = 'none';
+            document.getElementById('playerDisplay').style.display = 'block';
+            
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
+            players.forEach(name => {
+                const tag = document.createElement('div');
+                tag.className = 'player-tag';
+                tag.textContent = name;
+                playersList.appendChild(tag);
+            });
+            
+            document.getElementById('mainContent').style.display = 'block';
+            updateTurnIndicator();
+            updateScoreTable();
+            
+            setTimeout(() => {
+                document.getElementById('mainContent').scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        function updateTurnIndicator() {
+            const display = document.getElementById('currentPlayerDisplay');
+            if (!display || players.length === 0) return;
+            display.textContent = players[currentPlayerIndex];
+        }
+
+        function updateScoreTable() {
+            const tbody = document.getElementById('scoreTableBody');
+            if (!tbody || players.length === 0) return;
+            
+            tbody.innerHTML = '';
+            
+            players.forEach(player => {
+                const row = document.createElement('tr');
+                const total = Object.values(playerScores[player]).reduce((a, b) => a + b, 0);
+                
+                row.innerHTML = `
+                    <td><strong>${player}</strong></td>
+                    <td>${playerScores[player][1]}</td>
+                    <td>${playerScores[player][2]}</td>
+                    <td>${playerScores[player][3]}</td>
+                    <td>${playerScores[player][4]}</td>
+                    <td><strong>${total}</strong></td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function endTurn(section) {
+            // Mark this player as completed for this section
+            completedPlayers[section].add(currentPlayerIndex);
+            
+            // Move to next player
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            updateTurnIndicator();
+            
+            // Reset the section for next player
+            switch(section) {
+                case 1:
+                    resetDragDrop();
+                    document.getElementById('endTurnBtn1').style.display = 'none';
+                    break;
+                case 2:
+                    resetFillBlanks();
+                    document.getElementById('endTurnBtn2').style.display = 'none';
+                    break;
+                case 3:
+                    resetMCQ();
+                    document.getElementById('endTurnBtn3').style.display = 'none';
+                    break;
+                case 4:
+                    resetMatching();
+                    document.getElementById('endTurnBtn4').style.display = 'none';
+                    break;
+            }
+            
+            updateScoreTable();
+            
+            // Check if all players completed all sections
+            let allComplete = true;
+            for (let s = 1; s <= 4; s++) {
+                if (completedPlayers[s].size < players.length) {
+                    allComplete = false;
+                    break;
+                }
+            }
+            
+            if (allComplete) {
+                showLeaderboard();
+            }
+            
+            // Scroll to turn indicator
+            document.getElementById('turnIndicator').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            const podium = document.getElementById('podium');
+            if (!leaderboard || !podium) return;
+            
+            // Calculate totals and sort
+            const rankings = players.map(player => ({
+                name: player,
+                total: Object.values(playerScores[player]).reduce((a, b) => a + b, 0)
+            })).sort((a, b) => b.total - a.total);
+            
+            podium.innerHTML = '';
+            
+            const medals = ['🥇', '🥈', '🥉'];
+            const classes = ['first', 'second', 'third'];
+            
+            rankings.slice(0, 3).forEach((rank, index) => {
+                const place = document.createElement('div');
+                place.className = `podium-place ${classes[index]}`;
+                place.innerHTML = `
+                    <div class="medal">${medals[index]}</div>
+                    <div class="player-name">${rank.name}</div>
+                    <div class="total-score">${rank.total} points</div>
+                `;
+                podium.appendChild(place);
+            });
+            
+            leaderboard.style.display = 'block';
+            leaderboard.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Section 1: Drag and Drop
+        let draggedElement = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragDrop();
+            initFillBlanks();
+            initMCQ();
+            initMatching();
+        });
+
+        function initDragDrop() {
+            const draggables = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener('dragstart', () => {
+                    draggedElement = draggable;
+                    draggable.classList.add('dragging');
+                });
+
+                draggable.addEventListener('dragend', () => {
+                    draggable.classList.remove('dragging');
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    zone.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', () => {
+                    zone.classList.remove('drag-over');
+                });
+
+                zone.addEventListener('drop', e => {
+                    e.preventDefault();
+                    zone.classList.remove('drag-over');
+                    
+                    if (draggedElement) {
+                        zone.querySelector('.items').appendChild(draggedElement);
+                    }
+                });
+            });
+
+            const draggablesContainer = document.getElementById('draggables');
+            draggablesContainer.addEventListener('dragover', e => {
+                e.preventDefault();
+            });
+            draggablesContainer.addEventListener('drop', e => {
+                e.preventDefault();
+                if (draggedElement) {
+                    draggablesContainer.appendChild(draggedElement);
+                }
+            });
+        }
+
+        function checkDragDrop() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let correct = 0;
+            let total = 10;
+
+            dropZones.forEach(zone => {
+                const category = zone.dataset.category;
+                const items = zone.querySelectorAll('.drag-item');
+                
+                items.forEach(item => {
+                    if (item.dataset.category === category) {
+                        correct++;
+                        item.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                    } else {
+                        item.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+                    }
+                });
+            });
+
+            const score = correct * 10; // 10 points per correct answer
+            playerScores[players[currentPlayerIndex]][1] = score;
+
+            const scoreDisplay = document.getElementById('dragDropScore');
+            scoreDisplay.style.display = 'block';
+            scoreDisplay.textContent = `${players[currentPlayerIndex]} scored: ${score}/100 points (${correct}/${total} correct)`;
+            
+            document.getElementById('endTurnBtn1').style.display = 'inline-block';
+        }
+
+        function resetDragDrop() {
+            const draggables = document.getElementById('draggables');
+            const allItems = document.querySelectorAll('.drag-item');
+            
+            allItems.forEach(item => {
+                item.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                draggables.appendChild(item);
+            });
+            
+            document.getElementById('dragDropScore').style.display = 'none';
+        }
+
+        // Section 2: Fill in the Blanks
+        const fillBlankQuestions = [
+            { text: "The ________________________ feature in Windows 11 automatically cleans up temporary files and optimizes storage space.", answer: "Storage Sense" },
+            { text: "Users can monitor and end tasks using ___________________________ when programs become unresponsive.", answer: "Task Manager" },
+            { text: "A ____________________ is a disk or part of a disk that is formatted with a file system and ready to store data.", answer: "Volume" },
+            { text: "Apps listed under the ___________________ registry key run automatically whenever the current user signs in.", answer: "run" },
+            { text: "The _____________________________ partition contains the files needed to start Windows and display the boot menu.", answer: "System Reserved" },
+            { text: "The ___________________________ partition contains Windows operating-system files and must be formatted as NTFS.", answer: "Windows System" },
+            { text: "The __________________________ utility allows users to shrink or extend volumes, format drives, and prepare disks for new data.", answer: "Disk Management" },
+            { text: "To organize the start menu, create___________________ folders within the pinned section.", answer: "Named" },
+            { text: "Tools like Windows 7 backup or Restore or RoboCopy help ensure files are _______________ and can be restored if needed.", answer: "secure" },
+            { text: "Press ___________________ + __________________ + ___________________ to open task manager.", answer: "Ctrl + shift + esc" }
+        ];
+
+        function initFillBlanks() {
+            const container = document.getElementById('fillBlanksContainer');
+            if (!container) return;
+            
+            fillBlankQuestions.forEach((q, index) => {
+                const div = document.createElement('div');
+                div.className = 'fill-blank-item';
+                
+                const text = q.text.replace(/_+/g, `<input type="text" id="blank${index}" data-answer="${q.answer.toLowerCase()}" />`);
+                
+                div.innerHTML = `
+                    <p><strong>${index + 1}.</strong> ${text}</p>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        function checkFillBlanks() {
+            let correct = 0;
+            const total = fillBlankQuestions.length;
+
+            fillBlankQuestions.forEach((q, index) => {
+                const input = document.getElementById(`blank${index}`);
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswer = q.answer.toLowerCase();
+
+                if (userAnswer === correctAnswer) {
+                    input.classList.remove('incorrect');
+                    input.classList.add('correct');
+                    correct++;
+                } else {
+                    input.classList.remove('correct');
+                    input.classList.add('incorrect');
+                }
+            });
+
+            const score = correct * 10;
+            playerScores[players[currentPlayerIndex]][2] = score;
+
+            const scoreDisplay = document.getElementById('fillBlanksScore');
+            scoreDisplay.style.display = 'block';
+            scoreDisplay.textContent = `${players[currentPlayerIndex]} scored: ${score}/100 points (${correct}/${total} correct)`;
+            
+            document.getElementById('endTurnBtn2').style.display = 'inline-block';
+        }
+
+        function resetFillBlanks() {
+            fillBlankQuestions.forEach((q, index) => {
+                const input = document.getElementById(`blank${index}`);
+                input.value = '';
+                input.classList.remove('correct', 'incorrect');
+            });
+            document.getElementById('fillBlanksScore').style.display = 'none';
+        }
+
+        // Section 3: Multiple Choice
+        const mcqQuestions = [
+            {
+                question: "Microsoft officially released Windows 11 on...",
+                options: [
+                    "October 5, 2021",
+                    "When pigs learned to fly",
+                    "The day Steve Jobs wore a turtleneck",
+                    "Right after Y2K panic ended"
+                ],
+                correct: 0
+            },
+            {
+                question: "The most important change is a...",
+                options: [
+                    "New animated paperclip assistant",
+                    "CPU compatibility list",
+                    "Requirement to know interpretive dance",
+                    "Built-in time machine"
+                ],
+                correct: 1
+            },
+            {
+                question: "Some new features that are apparent on your first boot after upgrading to Windows 11 include...",
+                options: [
+                    "Changes to the user experience and a major update to the Microsoft Store",
+                    "A holographic Bill Gates welcoming you",
+                    "Automatic coffee maker integration",
+                    "Mandatory dance-off with Clippy"
+                ],
+                correct: 0
+            },
+            {
+                question: "Windows 11 also includes some new features designed to help Windows PCs work with... operating systems.",
+                options: [
+                    "Imaginary",
+                    "Alternative",
+                    "Alien",
+                    "Steam-powered Victorian"
+                ],
+                correct: 1
+            },
+            {
+                question: "The one and only release channel for Windows 11 is the... Channel.",
+                options: [
+                    "Discovery",
+                    "Bowling",
+                    "General Availability",
+                    "Panama"
+                ],
+                correct: 2
+            },
+            {
+                question: "When you create a free Microsoft account, the package includes access to...",
+                options: [
+                    "Bill Gates' personal playlist",
+                    "Outlook.com, email, and calendar services with 15 GB of free storage",
+                    "Unlimited pizza delivery",
+                    "A vintage Zune player"
+                ],
+                correct: 1
+            },
+            {
+                question: "The Task Manager is a system monitor program that provides information about the...",
+                options: [
+                    "Processes and applications running on a computer",
+                    "Number of times you've rage-quit programs",
+                    "Your computer's self-esteem",
+                    "Likelihood of your PC achieving sentience"
+                ],
+                correct: 0
+            },
+            {
+                question: "From a security standpoint, the most prominent part of the new hardware lineup is a... called a Trusted Platform Module (TPM).",
+                options: [
+                    "Magic eight ball",
+                    "Cryptographic processor",
+                    "Tiny security guard",
+                    "Crystal ball"
+                ],
+                correct: 1
+            },
+            {
+                question: "The Windows 11... is a central hub for accessing applications, files, and settings.",
+                options: [
+                    "Wormhole",
+                    "Ball pit",
+                    "Start menu",
+                    "Dance floor"
+                ],
+                correct: 2
+            },
+            {
+                question: "A... is a user account that stores credentials and settings only on the individual PC.",
+                options: [
+                    "Paranoid account",
+                    "Secret identity",
+                    "Local account",
+                    "Hermit profile"
+                ],
+                correct: 2
+            }
+        ];
+
+        function initMCQ() {
+            const container = document.getElementById('mcqContainer');
+            if (!container) return;
+            
+            mcqQuestions.forEach((q, qIndex) => {
+                const div = document.createElement('div');
+                div.className = 'mcq-item';
+                
+                let optionsHTML = '';
+                q.options.forEach((option, oIndex) => {
+                    optionsHTML += `
+                        <div class="mcq-option" onclick="selectMCQOption(${qIndex}, ${oIndex})">
+                            <strong>${String.fromCharCode(97 + oIndex)}).</strong> ${option}
+                        </div>
+                    `;
+                });
+                
+                div.innerHTML = `
+                    <div class="mcq-question">${qIndex + 1}. ${q.question}</div>
+                    <div class="mcq-options" id="mcqOptions${qIndex}">
+                        ${optionsHTML}
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+
+        let mcqAnswers = {};
+
+        function selectMCQOption(questionIndex, optionIndex) {
+            const optionsContainer = document.getElementById(`mcqOptions${questionIndex}`);
+            const options = optionsContainer.querySelectorAll('.mcq-option');
+            
+            options.forEach(opt => opt.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+            
+            mcqAnswers[questionIndex] = optionIndex;
+        }
+
+        function checkMCQ() {
+            let correct = 0;
+            const total = mcqQuestions.length;
+
+            mcqQuestions.forEach((q, qIndex) => {
+                const optionsContainer = document.getElementById(`mcqOptions${qIndex}`);
+                const options = optionsContainer.querySelectorAll('.mcq-option');
+                
+                options.forEach((opt, oIndex) => {
+                    opt.classList.remove('correct', 'incorrect', 'selected');
+                    
+                    if (oIndex === q.correct) {
+                        opt.classList.add('correct');
+                    } else if (mcqAnswers[qIndex] === oIndex) {
+                        opt.classList.add('incorrect');
+                    }
+                });
+
+                if (mcqAnswers[qIndex] === q.correct) {
+                    correct++;
+                }
+            });
+
+            const score = correct * 10;
+            playerScores[players[currentPlayerIndex]][3] = score;
+
+            const scoreDisplay = document.getElementById('mcqScore');
+            scoreDisplay.style.display = 'block';
+            scoreDisplay.textContent = `${players[currentPlayerIndex]} scored: ${score}/100 points (${correct}/${total} correct)`;
+            
+            document.getElementById('endTurnBtn3').style.display = 'inline-block';
+        }
+
+        function resetMCQ() {
+            mcqAnswers = {};
+            mcqQuestions.forEach((q, qIndex) => {
+                const optionsContainer = document.getElementById(`mcqOptions${qIndex}`);
+                const options = optionsContainer.querySelectorAll('.mcq-option');
+                options.forEach(opt => {
+                    opt.classList.remove('correct', 'incorrect', 'selected');
+                });
+            });
+            document.getElementById('mcqScore').style.display = 'none';
+        }
+
+        // Section 4: Matching
+        let matchingSelected = null;
+        let matchingPairs = {};
+
+        function initMatching() {
+            const items = document.querySelectorAll('.matching-item');
+            items.forEach(item => {
+                item.addEventListener('click', handleMatchingClick);
+            });
+        }
+
+        function handleMatchingClick(e) {
+            const item = e.currentTarget;
+            
+            if (item.classList.contains('matched')) return;
+
+            if (!matchingSelected) {
+                matchingSelected = item;
+                item.classList.add('selected');
+            } else {
+                if (matchingSelected === item) {
+                    matchingSelected.classList.remove('selected');
+                    matchingSelected = null;
+                    return;
+                }
+
+                const firstColumn = matchingSelected.parentElement;
+                const secondColumn = item.parentElement;
+
+                if (firstColumn !== secondColumn) {
+                    const id1 = matchingSelected.dataset.id;
+                    const id2 = item.dataset.id;
+
+                    if (id1 === id2) {
+                        matchingSelected.classList.remove('selected');
+                        matchingSelected.classList.add('matched');
+                        item.classList.add('matched');
+                        
+                        matchingPairs[id1] = true;
+                    }
+
+                    matchingSelected.classList.remove('selected');
+                    matchingSelected = null;
+                }
+            }
+        }
+
+        function checkMatching() {
+            const total = 4;
+            const correct = Object.keys(matchingPairs).length;
+
+            const score = correct * 25;
+            playerScores[players[currentPlayerIndex]][4] = score;
+
+            const scoreDisplay = document.getElementById('matchingScore');
+            scoreDisplay.style.display = 'block';
+            scoreDisplay.textContent = `${players[currentPlayerIndex]} scored: ${score}/100 points (${correct}/${total} matches)`;
+            
+            document.getElementById('endTurnBtn4').style.display = 'inline-block';
+        }
+
+        function resetMatching() {
+            matchingSelected = null;
+            matchingPairs = {};
+            
+            const items = document.querySelectorAll('.matching-item');
+            items.forEach(item => {
+                item.classList.remove('selected', 'matched');
+            });
+            
+            document.getElementById('matchingScore').style.display = 'none';
+        }
+
+    </script>
+</body>
+</html>
